@@ -1,0 +1,89 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/styles.css">
+    <script src="{{ STATIC_URL }}/static/js/lib/plotly-latest.min.js"></script>
+    <!--<link rel="stylesheet" type="text/css" href="/home/pleonova/Pet/ReportLab/report_lab_project/report_app/static/css/styles.css">-->
+    <!--<script src="/home/pleonova/Pet/ReportLab/report_lab_project/report_app/static/js/lib/plotly-latest.min.js"></script>-->
+</head>
+<body>
+<div class="wrap_content">
+    <div class="page_head">
+    <span class="left_head">{{ data.address.address }}, {{ data.address.state }} {{ data.address.city }}, {{ data.address.zip }}</span>
+        <span class="right_head"> 2017 Report</span>
+    </div>
+    <div class="img_wrap">
+    <img class="street_img" src="{{ data.address.street_image }}">
+    </div>
+     <div class="map_container">
+    <img class="map_img" src="{{ data.address.map_image }}">
+     </div>
+
+    <div class="month_daily_container">
+        <div class="month_daily_page_title">
+            {{ data.foottraffic_jan_daily.title}}
+        </div>
+        <div class="month_daily_page_statistic">
+            <div class="month_daily_page_statistic_item">
+                <span class="info_big">{{ data.foottraffic_jan_daily.peak.value }}</span>
+                <span class="info_mid">Peak Day</span>
+                <span class="info_sm">{{data.foottraffic_jan_daily.peak.timestamp }}</span>
+            </div>
+            <div class="month_daily_page_statistic_item">
+                <span class="info_big">{{ data.foottraffic_jan_daily.avg.value }}</span>
+                <span class="info_mid">Average Day</span>
+            </div>
+            <div class="month_daily_page_statistic_item">
+                <span class="info_big">{{ data.foottraffic_jan_daily.low.value }}</span>
+                <span class="info_mid">Low Day</span>
+                <span class="info_sm">{{data.foottraffic_jan_daily.low.timestamp|date:"F"}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="graph_container">
+        <div class="graph" id="bar_chart"></div>
+    </div>
+
+</div>
+<script>
+
+    var mapDays = {
+        'Sunday': 'S',
+        'Monday': 'M',
+        'Tuesday': 'T',
+        'Wednesday': 'W',
+        'Thursday': 'Th',
+        'Friday': 'F',
+        'Saturday': 'St'
+    };
+
+    {% autoescape off %}
+    var data = {{data| safe}};
+    {% endautoescape %}
+    var foottraffic_jan_daily = data["foottraffic_jan_daily"]["foottraffic"];
+
+    var barChart = document.getElementById('bar_chart');
+    var days = [];
+    var xvals = [];
+    var values = [];
+    foottraffic_jan_daily.forEach(function(el){
+        var day = el["timestamp"];
+        xvals.push(el["date"]);
+        days.push(mapDays[day]);
+        values.push(el["value"])
+    });
+    var ss = days;
+    var d = [{
+        x: xvals,
+        y: values,
+        type: 'bar'
+    }];
+    var layout = {xaxis: {ticktext : ss, tickvals : xvals}};
+	Plotly.plot( barChart, d, layout)
+</script>
+</body>
+</html>
