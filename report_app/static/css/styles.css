@@ -26,7 +26,7 @@ img{
     /*width: 100%;*/
 /*}*/
 .wrap_content{
-    background-color: #4f81bd;
+    /*background-color: forestgreen;*/
     position: relative;
     margin-top: 20px;
     padding: 0;
@@ -58,4 +58,128 @@ img{
     display:table-cell;
     text-align: center;
     width:30%;
+}
+
+.score_page{
+    position: relative;
+    top: 842px;
+    width:100%;
+    height: 1200px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    background-size: cover;
+    text-align: center;
+    background-image: url("../images/star.png");
+}
+.score_page_title {
+    font-size: 70px;
+    font-weight: bold;
+}
+.score_info_big {
+    position: relative;
+    top: 200px;
+    color: #023991;
+    font-size: 400px;
+
+}
+.score_info_sm {
+    position: relative;
+    top: 200px;
+    font-size: 120px;
+    color: #023991;
+
+}
+.info_bottom {
+    width: 100%;
+    position: relative;
+
+    top: 300px;
+}
+.info_l{
+    float: left;
+    width: 70%;
+}
+.inf_str {
+    display: block;
+    border-bottom: 2px solid #000;
+    text-align: justify;
+    width: 100%;
+    height: 25px;
+    float: left;
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.inf_norm{
+    height: 27px;
+    display: inline-block;
+    background: #fff;
+    font-weight: normal;
+    border-bottom: none;
+}
+.info_r{
+    float: left;
+    width: 30%;
+}
+.info_r img{
+    position: relative;
+    width:100%;
+
+}
+
+.heat_map_w_h {
+        position: relative;
+    top: 1684px;
+}
+#heat_map{
+
+    height: 1200px;
+}
+.month_daily_container{
+    text-align: center;
+}
+.month_daily_page_title {
+    font-style: normal;
+    font-weight: bolder;
+    font-size: 56px;
+    font-family: sans-serif;
+    text-align: center;
+    width: 100%;
+    display: table;
+    height: 180px;
+}
+.month_daily_page_title span {
+    display: table-cell;
+    vertical-align: middle;
+    
+}
+.month_daily_page_statistic {
+    background-color: #ef5ea9;
+    height: 300px;
+    color: #ffffff;
+}
+.month_daily_page_statistic_item{
+    width:33%;
+    height: inherit;
+    display: table;
+
+    float:left;
+}
+.wrap_info {
+    display: table-cell;
+    vertical-align: middle;
+}
+.month_daily_page_statistic_item span{
+    display: block;
+    font-family: sans-serif;
+}
+.info_big{
+    font-size: 42px;
+    font-weight: bold;
+}
+.info_mid{
+    font-size: 28px;
+}
+.info_sm{
+    font-size: 18px;
 }

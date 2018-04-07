@@ -1,14 +1,17 @@
 {% load staticfiles %}
+{% load humanize %}
+{% load extras %}
+
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/html">
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/styles.css">
-    <script src="{{ STATIC_URL }}/static/js/lib/plotly-latest.min.js"></script>
-    <!--<link rel="stylesheet" type="text/css" href="/home/pleonova/Pet/ReportLab/report_lab_project/report_app/static/css/styles.css">-->
-    <!--<script src="/home/pleonova/Pet/ReportLab/report_lab_project/report_app/static/js/lib/plotly-latest.min.js"></script>-->
+    <!--<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/static/css/styles.css">-->
+    <!--<script src="{{ STATIC_URL }}/static/js/lib/plotly-latest.min.js"></script>-->
+    <link rel="stylesheet" type="text/css" href="/home/pleonova/Pet/ReportLab/report_labs/report_app/static/css/styles.css">
+    <script src="/home/pleonova/Pet/ReportLab/report_lab_project/report_app/static/js/lib/plotly-latest.min.js"></script>
 </head>
 <body>
 <div class="wrap_content">
@@ -23,34 +26,95 @@
     <img class="map_img" src="{{ data.address.map_image }}">
      </div>
 
+    <!--for item in data.index >> create page with title-->
+    <!--for pages numbers 13..24 some content , for another pages - another-->
+    <div class="score_page">
+        <div class="score_page_title">
+            FOOT TRAFFIC SCORE
+        </div>
+        <div class="score_info_big">
+            {{ data.foottraffic_score|slice:":-15"|floatformat }} {{ data.foottraffic_score|slice:"-15:-13" }}
+        </div>
+<       <div class="score_info_sm">
+            {{ data.foottraffic_score|slice:"-13:" }}
+        </div>
+        <div class="info_bottom">
+            <div class="info_l">
+                <div class="inf_str">
+                <span class="inf_norm">Site Address</span>
+                <span class="bold_underl">{{data.address.address}}</span>
+                </div>
+                <div class="inf_str">
+                <span class="inf_norm">Establishment Name</span>
+                <span class="bold_underl">{{data.address.address}}</span>
+                </div>
+                <div class="inf_str">
+                <span class="inf_norm">Date Issued</span>
+                <span class="bold_underl">{% date_formatting data.date_issued '%Y-%m-%d %H:%M:%S' '%d/%m/%Y' %}</span>
+                </div>
+                <div class="inf_str">
+                <span class="inf_norm">Expires</span>
+                <span class="bold_underl">{% date_formatting data.date_report  '%Y-%m-%d %H:%M:%S' '%d/%m/%Y' %}</span>
+                </div>
+        </div>
+            <div class="info_r">
+                <img class="logo" src="{{ data.sidewalkiq_icon_main }}">
+                <span> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</span>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="heat_map_w_h">
+        <div class="month_daily_page_title">
+            <span>
+                Heat Map Week/Hour
+            <!--todo change to current page index.label-->
+            </span>
+        </div>
+        <div class="heat_map_table_wrap">
+            <div id="heat_map"></div>
+        </div>
+    </div>
     <div class="month_daily_container">
         <div class="month_daily_page_title">
+            <span>
             {{ data.foottraffic_jan_daily.title}}
+            </span>
         </div>
         <div class="month_daily_page_statistic">
             <div class="month_daily_page_statistic_item">
-                <span class="info_big">{{ data.foottraffic_jan_daily.peak.value }}</span>
-                <span class="info_mid">Peak Day</span>
-                <span class="info_sm">{{data.foottraffic_jan_daily.peak.timestamp }}</span>
+                <div class="wrap_info">
+                    <span class="info_big">{{ data.foottraffic_jan_daily.peak.value }}</span>
+                    <span class="info_mid">Peak Day</span>
+                    <span class="info_sm">({% date_formatting data.foottraffic_jan_daily.peak.timestamp '%Y-%m-%d %A' '%B' %})</span>
+                </div>
             </div>
             <div class="month_daily_page_statistic_item">
-                <span class="info_big">{{ data.foottraffic_jan_daily.avg.value }}</span>
-                <span class="info_mid">Average Day</span>
+                <div class="wrap_info">
+                    <span class="info_big">{{ data.foottraffic_jan_daily.avg.value }}</span>
+                    <span class="info_mid">Average Day</span>
+                </div>
             </div>
             <div class="month_daily_page_statistic_item">
-                <span class="info_big">{{ data.foottraffic_jan_daily.low.value }}</span>
-                <span class="info_mid">Low Day</span>
-                <span class="info_sm">{{data.foottraffic_jan_daily.low.timestamp|date:"F"}}</span>
+                <div class="wrap_info">
+                    <span class="info_big">{{ data.foottraffic_jan_daily.low.value }}</span>
+                    <span class="info_mid">Low Day</span>
+                    <span class="info_sm">({% date_formatting data.foottraffic_jan_daily.low.timestamp '%Y-%m-%d %A' '%B' %})</span>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="graph_container">
+        <div class="graph_container">
         <div class="graph" id="bar_chart"></div>
+        </div>
+        <div class="weather_info_container">
+                <div class="graph" id="weather_chart"></div>
+        </div>
     </div>
+
 
 </div>
 <script>
-
     var mapDays = {
         'Sunday': 'S',
         'Monday': 'M',
@@ -64,6 +128,122 @@
     {% autoescape off %}
     var data = {{data| safe}};
     {% endautoescape %}
+
+//    heat map
+    var heat_map_data = data["foottraffic_hourly_heatmap"]["foottraffic"];
+    var xValues = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    var yValues = [
+        "Midnight-1am",
+        "1am-2am",
+        "2am-3am",
+        "3am-4am",
+        "4am-5am",
+        "5am-6am",
+        "6am-7am",
+        "7am-8am",
+        "8am-9am",
+        "9am-10am",
+        "10am-11am",
+        "11am-Noon",
+        "Noon-1pm",
+        "1pm-2pm",
+        "2pm-3pm",
+        "3pm-4pm",
+        "4pm-5pm",
+        "5pm-6pm",
+        "6pm-7pm",
+        "7pm-8pm",
+        "8pm-9pm",
+        "9pm-10pm",
+        "10pm-11pm",
+        "11pm-Midnight"
+    ];
+    var zValues;
+    var colorScaleValue = [
+            ['0', '#ffffe7'],
+            ['0.2', '#f7fbbe'],
+            ['0.5', '#b0dd92'],
+            ["0.8",'#258444'],
+            ['1','#014226']
+    ];
+    var data_z = [];
+    heat_map_data.forEach(function(week_day) {
+        var zRow = [];
+        week_day.forEach(function(hour){
+            zRow.push(parseInt(hour["value"]));
+        });
+        data_z.push(zRow)
+    });
+
+    zValues = transformArray(data_z);
+
+    var layoutHeatMap = {
+        annotations: [],
+        margin: {
+            l: 160,
+            r: 20,
+            b: 20,
+            t: 40,
+            pad: 10
+          },
+        paper_bgcolor: '#ababaa',
+        xaxis: {
+            tickfont: {
+            family: 'Calibri',
+            size: 22,
+            color: 'white'
+        },
+        ticks: '',
+        side: 'top'
+        },
+        yaxis: {
+            autorange: 'reversed',
+            ticks: '',
+            tickfont: {
+                size: 20},
+            ticksuffix: ' ',
+            width: 700,
+            height: 700,
+            autosize: false
+        }
+    };
+
+    var dataHeatMap = [{
+        z: zValues,
+        x: xValues,
+        y: yValues,
+        type: 'heatmap',
+        colorscale: colorScaleValue,
+        showscale: false
+    }];
+
+        for ( var i = 0; i < yValues.length; i++ ) {
+            for ( var j = 0; j < xValues.length; j++ ) {
+                var currentValue = zValues[i][j];
+                if (currentValue >= 1100) {
+                var textColor = 'white';
+                }else{
+                var textColor = 'black';
+                }
+                var result = {
+                    x: xValues[j],
+                    y: yValues[i],
+                    text: zValues[i][j],
+                    showarrow: false,
+                    font: {
+                        family: 'Arial',
+                        size: 19,
+                        color: textColor
+                    }
+                };
+                layoutHeatMap.annotations.push(result);
+            }
+        }
+    var HeatMap = document.getElementById('heat_map');
+    Plotly.newPlot(HeatMap, dataHeatMap, layoutHeatMap);
+
+
+//  foottraffic_jan_daily
     var foottraffic_jan_daily = data["foottraffic_jan_daily"]["foottraffic"];
 
     var barChart = document.getElementById('bar_chart');
@@ -77,13 +257,80 @@
         values.push(el["value"])
     });
     var ss = days;
-    var d = [{
+    var barData = [{
         x: xvals,
         y: values,
+        marker: {
+            color: '#ef5ea9'
+        },
         type: 'bar'
     }];
-    var layout = {xaxis: {ticktext : ss, tickvals : xvals}};
-	Plotly.plot( barChart, d, layout)
+    var layoutBar = {font: {
+            size: 18},
+        xaxis: {ticktext: ss,
+        tickvals: xvals
+    }};
+	Plotly.plot( barChart, barData, layoutBar);
+
+//   end foottraffic_jan_daily
+//    weather
+    var weatherChart = document.getElementById('weather_chart');
+    var weather_data = data["foottraffic_jan_daily"]["weather"];
+    var low_temprature_array = [];
+
+    var high_temprature_array = [];
+    var precipitation_array = [];
+    var date_array = [];
+
+    weather_data.forEach(function(el) {
+        low_temprature_array.push(el["day_low"]);
+        high_temprature_array.push(el["day_high"]);
+        precipitation_array.push(el["precipitation"]);
+        date_array.push(el["timestamp"])
+    });
+    var data_chart = [{
+            x: date_array,
+            y: low_temprature_array,
+            type: "scatter",
+            line: {shape: 'spline', smoothing: 0.4}
+        },
+        {
+            x: date_array,
+            y: high_temprature_array,
+            type: "scatter",
+            line: {shape: 'spline', smoothing: 0.4}
+        },
+        {
+            x: date_array,
+            y: precipitation_array,
+            yaxis: 'y2',
+            line: {shape: 'hvh'},
+            fill: 'tozeroy'
+        }
+    ];
+    var weather_ch_layout = {
+            yaxis2: {
+                type: 'ln',
+                overlaying: 'y',
+                side: 'right'
+            }
+     };
+    Plotly.plot( weatherChart, data_chart, weather_ch_layout);
+
+    function transformArray(arrayOfArrays) {
+        var l = arrayOfArrays[0].length;
+        var newArray = [];
+        for (i=0;i<l;i++){
+            newArray.push([])
+        }
+        for (var i=0; i<arrayOfArrays[0].length;i++){
+            for (var j=0; j<arrayOfArrays.length;j++){
+                newArray[i][j] = arrayOfArrays[j][i]
+            }
+        }
+        return newArray
+    }
+// end weather
 </script>
 </body>
 </html>
